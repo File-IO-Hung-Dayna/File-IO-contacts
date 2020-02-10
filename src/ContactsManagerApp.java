@@ -39,9 +39,14 @@ public class ContactsManagerApp {
         }
 //        app.writeContacts(app.contactList, contactsFilename);
 
-        Object[] possibilities = {"1. View contacts.", "2. Add a new contact.", "3. Search a contact by name.", "4. Delete and existing contact.", "5. Exit."};
-        String s = (String)JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, null, possibilities, possibilities[0]);
-        System.out.println(s);
+        //User options
+//        ImageIcon basketball = new ImageIcon("src/channel.png");
+//        Object[] possibilities = {"1. View contacts.", "2. Add a new contact.", "3. Search a contact by name.", "4. Delete and existing contact.", "5. Exit."};
+//        String s = (String)JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, basketball, possibilities, possibilities[0]);
+//        System.out.println(s);
+
+        app.viewContacts();
+
     }
 
     public void writeContacts(List<Contact> contactsList, Path contactsFilename) {
@@ -93,5 +98,13 @@ public class ContactsManagerApp {
             ioe.printStackTrace();
         }
     }
+
+    public void viewContacts(){
+        System.out.printf("%-21s | %-13s\n", "NAME", "PHONE NUMBER");
+        for(Contact contact : this.contactList){
+            System.out.printf("%-10s %-10s | %-13s\n", contact.getFirstName(), contact.getLastName(), contact.getPhoneNumber());
+        }
+    }
+
 
 }
