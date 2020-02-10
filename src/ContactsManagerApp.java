@@ -32,13 +32,16 @@ public class ContactsManagerApp {
         app.createFiles(contactsDirectory, contactsFilename);
         /*Reads the file and creates the contact list on the app class*/
         app.readContactsFile(contactsFilename);
-        app.addContact();
+//        app.addContact();
 
         for (Contact contact : app.contactList) {
             System.out.println(contact.getFirstName());
         }
-        app.writeContacts(app.contactList, contactsFilename);
+//        app.writeContacts(app.contactList, contactsFilename);
 
+        Object[] possibilities = {"1. View contacts.", "2. Add a new contact.", "3. Search a contact by name.", "4. Delete and existing contact.", "5. Exit."};
+        String s = (String)JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, null, possibilities, possibilities[0]);
+        System.out.println(s);
     }
 
     public void writeContacts(List<Contact> contactsList, Path contactsFilename) {
@@ -53,9 +56,9 @@ public class ContactsManagerApp {
     }
 
     public void addContact() {
-        String firstName = JOptionPane.showInputDialog("Please enter the contact's first name.");
-        String lastName = JOptionPane.showInputDialog("Please enter the contact's last name.");
-        String phoneNumber = JOptionPane.showInputDialog("Please enter the contact's phone number.");
+        String firstName = JOptionPane.showInputDialog("Please enter the contact's first name:");
+        String lastName = JOptionPane.showInputDialog("Please enter the contact's last name:");
+        String phoneNumber = JOptionPane.showInputDialog("Please enter the contact's phone number:");
         this.contactList.add(new Contact(firstName, lastName, phoneNumber));
     }
 
@@ -90,6 +93,5 @@ public class ContactsManagerApp {
             ioe.printStackTrace();
         }
     }
-
 
 }
