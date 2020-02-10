@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -32,28 +33,68 @@ public class ContactsManagerApp {
         app.createFiles(contactsDirectory, contactsFilename);
         /*Reads the file and creates the contact list on the app class*/
         app.readContactsFile(contactsFilename);
-//        app.addContact();
+//        while (app.promptUser());
+        String searchName = JOptionPane.showInputDialog(null, "Please enter a name to search.");
+        String[] searchArrayKeywords = searchName.split(" ");
+        List<Contact> searchedList = new ArrayList<>();
 
         for (Contact contact : app.contactList) {
-            System.out.println(contact.getFirstName());
+            for (String item : searchArrayKeywords) {
+                if (contact.getFirstName().toUpperCase().contains(item.toUpperCase()) || contact.getLastName().toUpperCase().contains(item.toUpperCase())) {
+                    System.out.println(contact.getFirstName());
+                }
+            }
+//            if (contact.getFirstName().contains(searchArrayKeywords))
         }
+
+
+//        app.addContact();
+
+//        for (Contact contact : app.contactList) {
+//            System.out.println(contact.getFirstName());
+//        }
 //        app.writeContacts(app.contactList, contactsFilename);
 
+
+    }
+
+    public void deleteContact() {
+        String[] namesArray = new String[this.contactList.size()];
+        int index = 0;
+        for (Contact contact: this.contactList) {
+            namesArray[index] = (index + 1) + ". " + (contact.getFirstName() + " " + contact.getLastName()).toUpperCase();
+            index++;
+        }
+        String stringResponse = (String)JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, null, namesArray, this.contactList.get(0));
+        int response = Integer.parseInt(stringResponse.substring(0,1));
+        this.contactList.remove(response-1);
+    }
+
+    public boolean promptUser() {
         //User options
         ImageIcon basketball = new ImageIcon("src/channel.png");
-        Object[] possibilities = {"1. View contacts.", "2. Add a new contact.", "3. Search a contact by name.", "4. Delete and existing contact.", "5. Exit."};
-        String s = (String)JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, basketball, possibilities, possibilities[0]);
-        System.out.println(s);
+        Object[] possibilities = {"1. View contacts.", "2. Add a new contact.", "3. Search a contact by name.", "4. Delete an existing contact.", "5. Exit."};
+        String stringResponse = (String)JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, basketball, possibilities, possibilities[0]);
+        System.out.println(stringResponse);
 
-//        if(s.startsWith("1")){
-//            app.viewContacts();
-//        } else if (s.startsWith("2")){
-//            app.addContact();
-//        } else if (s.startsWith("3")){
-//            //search contact by name
-//        } e
-//        int response = String.parse s.slice(1);
-
+        int option = Integer.parseInt(stringResponse.substring(0,1));
+        System.out.println(option);
+        switch (option) {
+            case 1:
+                this.viewContacts();
+                return true;
+            case 2:
+                this.addContact();
+                return true;
+            case 3:
+                return true;
+            case 4:
+                this.deleteContact();
+                return true;
+            case 5:
+            default:
+                return false;
+        }
     }
 
     public void writeContacts(List<Contact> contactsList, Path contactsFilename) {
@@ -72,6 +113,7 @@ public class ContactsManagerApp {
         String lastName = JOptionPane.showInputDialog("Please enter the contact's last name:");
         String phoneNumber = JOptionPane.showInputDialog("Please enter the contact's phone number:");
         this.contactList.add(new Contact(firstName, lastName, phoneNumber));
+        JOptionPane.showMessageDialog(null, "Contact Added!");
     }
 
     public void readContactsFile(Path contactsFilename) {
