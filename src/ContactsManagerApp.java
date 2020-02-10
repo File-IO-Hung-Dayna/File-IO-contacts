@@ -40,12 +40,19 @@ public class ContactsManagerApp {
 //        app.writeContacts(app.contactList, contactsFilename);
 
         //User options
-//        ImageIcon basketball = new ImageIcon("src/channel.png");
-//        Object[] possibilities = {"1. View contacts.", "2. Add a new contact.", "3. Search a contact by name.", "4. Delete and existing contact.", "5. Exit."};
-//        String s = (String)JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, basketball, possibilities, possibilities[0]);
-//        System.out.println(s);
+        ImageIcon basketball = new ImageIcon("src/channel.png");
+        Object[] possibilities = {"1. View contacts.", "2. Add a new contact.", "3. Search a contact by name.", "4. Delete and existing contact.", "5. Exit."};
+        String s = (String)JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, basketball, possibilities, possibilities[0]);
+        System.out.println(s);
 
-        app.viewContacts();
+//        if(s.startsWith("1")){
+//            app.viewContacts();
+//        } else if (s.startsWith("2")){
+//            app.addContact();
+//        } else if (s.startsWith("3")){
+//            //search contact by name
+//        } e
+//        int response = String.parse s.slice(1);
 
     }
 
