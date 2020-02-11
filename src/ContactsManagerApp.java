@@ -34,20 +34,8 @@ public class ContactsManagerApp {
         /*Reads the file and creates the contact list on the app class*/
         app.readContactsFile(contactsFilename);
 //        while (app.promptUser());
-        String searchName = JOptionPane.showInputDialog(null, "Please enter a name to search.");
-        String[] searchArrayKeywords = searchName.split(" ");
-        List<Contact> searchedList = new ArrayList<>();
 
-        for (Contact contact : app.contactList) {
-            for (String item : searchArrayKeywords) {
-                if (contact.getFirstName().toUpperCase().contains(item.toUpperCase()) || contact.getLastName().toUpperCase().contains(item.toUpperCase())) {
-                    System.out.println(contact.getFirstName());
-                }
-            }
-//            if (contact.getFirstName().contains(searchArrayKeywords))
-        }
-
-
+        app.searchDropDown();
 //        app.addContact();
 
 //        for (Contact contact : app.contactList) {
@@ -56,6 +44,38 @@ public class ContactsManagerApp {
 //        app.writeContacts(app.contactList, contactsFilename);
 
 
+    }
+
+    public void searchDropDown(){
+        String firstName, lastName;
+        String searchName = JOptionPane.showInputDialog(null, "Please enter a name to search.");
+        String[] searchArrayKeywords = searchName.split(" ");
+        List<Contact> searchedList = new ArrayList<>();
+
+        for (Contact contact : this.contactList) {
+            for (String item : searchArrayKeywords) {
+                if (contact.getFirstName().toUpperCase().contains(item.toUpperCase()) || contact.getLastName().toUpperCase().contains(item.toUpperCase())) {
+                    searchedList.add(new Contact(contact.getFirstName(), contact.getLastName(), contact.getPhoneNumber()));
+                }
+            }
+//            if (contact.getFirstName().contains(searchArrayKeywords))
+        }
+
+        for (Contact contact : searchedList){
+            System.out.println(contact.getFirstName() + " " + contact.getLastName());
+        }
+
+        String[] namesArray = new String[searchedList.size()];
+        int index = 0;
+        for (Contact contact: searchedList) {
+            namesArray[index] = (contact.getFirstName() + " " + contact.getLastName()).toUpperCase();
+            index++;
+        }
+        String searchResponse = (String)JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, null, namesArray, searchedList.get(0));
+        firstName = searchResponse.substring(0, searchResponse.indexOf(" "));
+        lastName = searchResponse.substring(searchResponse.indexOf(" ") + 1);
+        System.out.println(firstName + " " + lastName);
+        viewContacts(firstName, lastName);
     }
 
     public void deleteContact() {
@@ -87,6 +107,7 @@ public class ContactsManagerApp {
                 this.addContact();
                 return true;
             case 3:
+                this.searchDropDown();
                 return true;
             case 4:
                 this.deleteContact();
@@ -152,6 +173,13 @@ public class ContactsManagerApp {
         System.out.printf("%-21s | %-13s\n", "NAME", "PHONE NUMBER");
         for(Contact contact : this.contactList){
             System.out.printf("%-10s %-10s | %-13s\n", contact.getFirstName(), contact.getLastName(), contact.getPhoneNumber());
+        }
+    }
+    public void viewContacts(String firstName, String lastName){
+        for(Contact contact : this.contactList){
+            if(contact.getFirstName().equalsIgnoreCase(firstName) && contact.getLastName().equalsIgnoreCase(lastName)){
+                System.out.println(contact.getFirstName() + " " + contact.getLastName() + ": " + contact.getPhoneNumber());
+            }
         }
     }
 
