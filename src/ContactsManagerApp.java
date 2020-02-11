@@ -33,19 +33,15 @@ public class ContactsManagerApp {
         app.createFiles(contactsDirectory, contactsFilename);
         /*Reads the file and creates the contact list on the app class*/
         app.readContactsFile(contactsFilename);
-//        app.viewContacts();
+        /*Prompts user interaction*/
+//        while (app.promptUser()) ;
+        if (app.contactList.contains(new Contact("Michael", "Jordan","210-232-2323"))) {
+            System.out.println("here");
+        }
 
-//        while (app.promptUser());
-//        app.searchDropDown();
-        app.addContact();
-
-
-//        for (Contact contact : app.contactList) {
-//            System.out.println(contact.getFirstName());
-//        }
+        /*Writes to the document before close and show's a closing message*/
 //        app.writeContacts(app.contactList, contactsFilename);
-
-
+        JOptionPane.showMessageDialog(null, "Thanks for using our Contacts Manager App!!");
     }
 
     public void searchDropDown() {
@@ -62,10 +58,6 @@ public class ContactsManagerApp {
             }
         }
 
-//        for (Contact contact : searchedList){
-//            System.out.println(contact.getFirstName() + " " + contact.getLastName());
-//        }
-
         String[] namesArray = new String[searchedList.size()];
         int index = 0;
         for (Contact contact : searchedList) {
@@ -73,8 +65,8 @@ public class ContactsManagerApp {
             index++;
         }
         String searchResponse = (String) JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, null, namesArray, searchedList.get(0));
-        firstName = searchResponse.substring(0, searchResponse.indexOf(" "));
-        lastName = searchResponse.substring(searchResponse.indexOf(" ") + 1);
+        firstName = searchResponse.substring(0, searchResponse.lastIndexOf(" "));
+        lastName = searchResponse.substring(searchResponse.lastIndexOf(" ") + 1);
         viewContacts(firstName, lastName);
     }
 
@@ -94,27 +86,30 @@ public class ContactsManagerApp {
         //User options
         ImageIcon basketball = new ImageIcon("src/channel.png");
         Object[] possibilities = {"1. View contacts.", "2. Add a new contact.", "3. Search a contact by name.", "4. Delete an existing contact.", "5. Exit."};
-        String stringResponse = (String) JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, basketball, possibilities, possibilities[0]);
-        System.out.println(stringResponse);
-
-        int option = Integer.parseInt(stringResponse.substring(0, 1));
-        System.out.println(option);
-        switch (option) {
-            case 1:
-                this.viewContacts();
-                return true;
-            case 2:
-                this.addContact();
-                return true;
-            case 3:
-                this.searchDropDown();
-                return true;
-            case 4:
-                this.deleteContact();
-                return true;
-            case 5:
-            default:
-                return false;
+        String stringResponse;
+        try {
+            stringResponse = (String) JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, basketball, possibilities, possibilities[0]);
+            int option = Integer.parseInt(stringResponse.substring(0, 1));
+            System.out.println(option);
+            switch (option) {
+                case 1:
+                    this.viewContacts();
+                    return true;
+                case 2:
+                    this.addContact();
+                    return true;
+                case 3:
+                    this.searchDropDown();
+                    return true;
+                case 4:
+                    this.deleteContact();
+                    return true;
+                case 5:
+                default:
+                    return false;
+            }
+        } catch (NullPointerException npe) {
+            return false;
         }
     }
 
@@ -138,6 +133,7 @@ public class ContactsManagerApp {
             try {
                 phoneNumber = JOptionPane.showInputDialog(null, "Please enter the contact's phone number (###-###-#### for 10-digit or ###-#### for 7-digit):", "Phone Number Entry", JOptionPane.PLAIN_MESSAGE);
                 if (phoneNumber.matches("[1-9][0-9][0-9]-[0-9][0-9][0-9][0-9]|[1-9][0-9][0-9]-[1-9][0-9][0-9]-[0-9][0-9][0-9][0-9]")) {
+
                     this.contactList.add(new Contact(firstName, lastName, phoneNumber));
                     JOptionPane.showMessageDialog(null, "Contact Added!");
                     correctEntry = true;
@@ -157,8 +153,8 @@ public class ContactsManagerApp {
             String[] lineArray;
             while (scanner.hasNextLine()) {
                 lineArray = scanner.nextLine().split(",");
-                firstName = lineArray[0].substring(0, lineArray[0].indexOf(" "));
-                lastName = lineArray[0].substring(lineArray[0].indexOf(" ") + 1);
+                firstName = lineArray[0].substring(0, lineArray[0].lastIndexOf(" "));
+                lastName = lineArray[0].substring(lineArray[0].lastIndexOf(" ") + 1);
                 phoneNumber = lineArray[1];
                 this.contactList.add(new Contact(firstName, lastName, phoneNumber));
             }
