@@ -33,10 +33,12 @@ public class ContactsManagerApp {
         app.createFiles(contactsDirectory, contactsFilename);
         /*Reads the file and creates the contact list on the app class*/
         app.readContactsFile(contactsFilename);
-//        while (app.promptUser());
+//        app.viewContacts();
 
-        app.searchDropDown();
-//        app.addContact();
+//        while (app.promptUser());
+//        app.searchDropDown();
+        app.addContact();
+
 
 //        for (Contact contact : app.contactList) {
 //            System.out.println(contact.getFirstName());
@@ -46,7 +48,7 @@ public class ContactsManagerApp {
 
     }
 
-    public void searchDropDown(){
+    public void searchDropDown() {
         String firstName, lastName;
         String searchName = JOptionPane.showInputDialog(null, "Please enter a name to search.");
         String[] searchArrayKeywords = searchName.split(" ");
@@ -58,46 +60,44 @@ public class ContactsManagerApp {
                     searchedList.add(new Contact(contact.getFirstName(), contact.getLastName(), contact.getPhoneNumber()));
                 }
             }
-//            if (contact.getFirstName().contains(searchArrayKeywords))
         }
 
-        for (Contact contact : searchedList){
-            System.out.println(contact.getFirstName() + " " + contact.getLastName());
-        }
+//        for (Contact contact : searchedList){
+//            System.out.println(contact.getFirstName() + " " + contact.getLastName());
+//        }
 
         String[] namesArray = new String[searchedList.size()];
         int index = 0;
-        for (Contact contact: searchedList) {
+        for (Contact contact : searchedList) {
             namesArray[index] = (contact.getFirstName() + " " + contact.getLastName()).toUpperCase();
             index++;
         }
-        String searchResponse = (String)JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, null, namesArray, searchedList.get(0));
+        String searchResponse = (String) JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, null, namesArray, searchedList.get(0));
         firstName = searchResponse.substring(0, searchResponse.indexOf(" "));
         lastName = searchResponse.substring(searchResponse.indexOf(" ") + 1);
-        System.out.println(firstName + " " + lastName);
         viewContacts(firstName, lastName);
     }
 
     public void deleteContact() {
         String[] namesArray = new String[this.contactList.size()];
         int index = 0;
-        for (Contact contact: this.contactList) {
+        for (Contact contact : this.contactList) {
             namesArray[index] = (index + 1) + ". " + (contact.getFirstName() + " " + contact.getLastName()).toUpperCase();
             index++;
         }
-        String stringResponse = (String)JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, null, namesArray, this.contactList.get(0));
-        int response = Integer.parseInt(stringResponse.substring(0,1));
-        this.contactList.remove(response-1);
+        String stringResponse = (String) JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, null, namesArray, this.contactList.get(0));
+        int response = Integer.parseInt(stringResponse.substring(0, 1));
+        this.contactList.remove(response - 1);
     }
 
     public boolean promptUser() {
         //User options
         ImageIcon basketball = new ImageIcon("src/channel.png");
         Object[] possibilities = {"1. View contacts.", "2. Add a new contact.", "3. Search a contact by name.", "4. Delete an existing contact.", "5. Exit."};
-        String stringResponse = (String)JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, basketball, possibilities, possibilities[0]);
+        String stringResponse = (String) JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, basketball, possibilities, possibilities[0]);
         System.out.println(stringResponse);
 
-        int option = Integer.parseInt(stringResponse.substring(0,1));
+        int option = Integer.parseInt(stringResponse.substring(0, 1));
         System.out.println(option);
         switch (option) {
             case 1:
@@ -132,9 +132,22 @@ public class ContactsManagerApp {
     public void addContact() {
         String firstName = JOptionPane.showInputDialog("Please enter the contact's first name:");
         String lastName = JOptionPane.showInputDialog("Please enter the contact's last name:");
-        String phoneNumber = JOptionPane.showInputDialog("Please enter the contact's phone number:");
-        this.contactList.add(new Contact(firstName, lastName, phoneNumber));
-        JOptionPane.showMessageDialog(null, "Contact Added!");
+        String phoneNumber;
+        boolean correctEntry = false;
+        do {
+            try {
+                phoneNumber = JOptionPane.showInputDialog(null, "Please enter the contact's phone number (###-###-#### for 10-digit or ###-#### for 7-digit):", "Phone Number Entry", JOptionPane.PLAIN_MESSAGE);
+                if (phoneNumber.matches("[1-9][0-9][0-9]-[0-9][0-9][0-9][0-9]|[1-9][0-9][0-9]-[1-9][0-9][0-9]-[0-9][0-9][0-9][0-9]")) {
+                    this.contactList.add(new Contact(firstName, lastName, phoneNumber));
+                    JOptionPane.showMessageDialog(null, "Contact Added!");
+                    correctEntry = true;
+                } else {
+                    JOptionPane.showMessageDialog(null, "Error with formatting", "Warning!!!", JOptionPane.WARNING_MESSAGE);
+                }
+            } catch (NullPointerException npe) {
+                break;
+            }
+        } while (!correctEntry);
     }
 
     public void readContactsFile(Path contactsFilename) {
@@ -169,16 +182,24 @@ public class ContactsManagerApp {
         }
     }
 
-    public void viewContacts(){
-        System.out.printf("%-21s | %-13s\n", "NAME", "PHONE NUMBER");
-        for(Contact contact : this.contactList){
-            System.out.printf("%-10s %-10s | %-13s\n", contact.getFirstName(), contact.getLastName(), contact.getPhoneNumber());
+    public void viewContacts() {
+        ImageIcon basketball = new ImageIcon("src/channel.png");
+        StringBuilder displayString = new StringBuilder();
+//        System.out.printf("%-21s | %-13s\n", "NAME", "PHONE NUMBER");
+        displayString.append("CONTACT LIST\n");
+        for (Contact contact : this.contactList) {
+//            System.out.printf("%-10s %-10s | %-13s\n", contact.getFirstName(), contact.getLastName(), contact.getPhoneNumber());
+            displayString.append(contact.getFirstName()).append(" ").append(contact.getLastName()).append(": ").append(contact.getPhoneNumber()).append("\n");
         }
+        System.out.println(displayString);
+        JOptionPane.showMessageDialog(null, displayString, "Your Contact's Details", JOptionPane.PLAIN_MESSAGE, basketball);
     }
-    public void viewContacts(String firstName, String lastName){
-        for(Contact contact : this.contactList){
-            if(contact.getFirstName().equalsIgnoreCase(firstName) && contact.getLastName().equalsIgnoreCase(lastName)){
-                System.out.println(contact.getFirstName() + " " + contact.getLastName() + ": " + contact.getPhoneNumber());
+
+    public void viewContacts(String firstName, String lastName) {
+        ImageIcon basketball = new ImageIcon("src/channel.png");
+        for (Contact contact : this.contactList) {
+            if (contact.getFirstName().equalsIgnoreCase(firstName) && contact.getLastName().equalsIgnoreCase(lastName)) {
+                JOptionPane.showMessageDialog(null, String.format("Name: %s %s\nPhone Number: %s", contact.getFirstName(), contact.getLastName(), contact.getPhoneNumber()), "Your Contact's Details", JOptionPane.PLAIN_MESSAGE, basketball);
             }
         }
     }
