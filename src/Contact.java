@@ -1,4 +1,4 @@
-public class Contact {
+public class Contact implements Comparable<Contact>{
     private String firstName;
     private String lastName;
     private String phoneNumber;
@@ -33,5 +33,11 @@ public class Contact {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    @Override
+    public int compareTo(Contact contact) {
+        String compareName = contact.getFirstName();
+        return this.getFirstName().compareToIgnoreCase(compareName);
     }
 }

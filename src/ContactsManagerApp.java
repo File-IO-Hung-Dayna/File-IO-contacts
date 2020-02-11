@@ -1,15 +1,7 @@
 import javax.swing.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
 
 public class ContactsManagerApp {
     public List<Contact> contactList;
@@ -18,38 +10,32 @@ public class ContactsManagerApp {
         this.contactList = new ArrayList<>();
     }
 
-
     public static void main(String[] args) {
         ContactsManagerApp app = new ContactsManagerApp();
-
+        ImageIcon codey = new ImageIcon("src/codey.png");
         String directory = "contactsDir";
         String filename = "contacts.txt";
-
         Path contactsDirectory = Paths.get(directory);
-        System.out.println(contactsDirectory.toAbsolutePath());
         Path contactsFilename = Paths.get(directory, filename);
-
         /*Created directory and files*/
         app.createFiles(contactsDirectory, contactsFilename);
         /*Reads the file and creates the contact list on the app class*/
         app.readContactsFile(contactsFilename);
         /*Prompts user interaction*/
-//        while (app.promptUser()) ;
-        if (app.contactList.contains(new Contact("Michael", "Jordan","210-232-2323"))) {
-            System.out.println("here");
-        }
-
+        while (app.promptUser()) ;
         /*Writes to the document before close and show's a closing message*/
-//        app.writeContacts(app.contactList, contactsFilename);
-        JOptionPane.showMessageDialog(null, "Thanks for using our Contacts Manager App!!");
+        app.writeContacts(app.contactList, contactsFilename);
+        JOptionPane.showMessageDialog(null, "Thanks for using our Contacts Manager App!!", "Goodbye!", JOptionPane.PLAIN_MESSAGE, codey);
     }
 
+    /*Displays the search prompt and the dropdown to select the filtered names*/
     public void searchDropDown() {
-        String firstName, lastName;
+        String firstName, lastName, searchResponse;
+        String[] namesArray;
         String searchName = JOptionPane.showInputDialog(null, "Please enter a name to search.");
         String[] searchArrayKeywords = searchName.split(" ");
         List<Contact> searchedList = new ArrayList<>();
-
+        int index = 0;
         for (Contact contact : this.contactList) {
             for (String item : searchArrayKeywords) {
                 if (contact.getFirstName().toUpperCase().contains(item.toUpperCase()) || contact.getLastName().toUpperCase().contains(item.toUpperCase())) {
@@ -57,40 +43,40 @@ public class ContactsManagerApp {
                 }
             }
         }
-
-        String[] namesArray = new String[searchedList.size()];
-        int index = 0;
+        namesArray = new String[searchedList.size()];
         for (Contact contact : searchedList) {
             namesArray[index] = (contact.getFirstName() + " " + contact.getLastName()).toUpperCase();
             index++;
         }
-        String searchResponse = (String) JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, null, namesArray, searchedList.get(0));
+        searchResponse = (String) JOptionPane.showInputDialog(null, "Select an option:", "Search Dropdown", JOptionPane.PLAIN_MESSAGE, null, namesArray, searchedList.get(0));
         firstName = searchResponse.substring(0, searchResponse.lastIndexOf(" "));
         lastName = searchResponse.substring(searchResponse.lastIndexOf(" ") + 1);
         viewContacts(firstName, lastName);
     }
 
+    /*Displays the users available to delete*/
     public void deleteContact() {
         String[] namesArray = new String[this.contactList.size()];
-        int index = 0;
+        String stringResponse;
+        int index = 0, response;
         for (Contact contact : this.contactList) {
             namesArray[index] = (index + 1) + ". " + (contact.getFirstName() + " " + contact.getLastName()).toUpperCase();
             index++;
         }
-        String stringResponse = (String) JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, null, namesArray, this.contactList.get(0));
-        int response = Integer.parseInt(stringResponse.substring(0, 1));
+        stringResponse = (String) JOptionPane.showInputDialog(null, "Select an option:", "Delete user Dropdown", JOptionPane.PLAIN_MESSAGE, null, namesArray, this.contactList.get(0));
+        response = Integer.parseInt(stringResponse.substring(0, 1));
         this.contactList.remove(response - 1);
     }
 
+    /*Prompts the user to select an option via JOptionPane*/
     public boolean promptUser() {
-        //User options
         ImageIcon basketball = new ImageIcon("src/channel.png");
         Object[] possibilities = {"1. View contacts.", "2. Add a new contact.", "3. Search a contact by name.", "4. Delete an existing contact.", "5. Exit."};
         String stringResponse;
+        int option;
         try {
-            stringResponse = (String) JOptionPane.showInputDialog(null, "Select an option:", "Customized Dialog", JOptionPane.PLAIN_MESSAGE, basketball, possibilities, possibilities[0]);
-            int option = Integer.parseInt(stringResponse.substring(0, 1));
-            System.out.println(option);
+            stringResponse = (String) JOptionPane.showInputDialog(null, "Select an option:", "User Options", JOptionPane.PLAIN_MESSAGE, basketball, possibilities, possibilities[0]);
+            option = Integer.parseInt(stringResponse.substring(0, 1));
             switch (option) {
                 case 1:
                     this.viewContacts();
@@ -113,6 +99,7 @@ public class ContactsManagerApp {
         }
     }
 
+    /*Writes to the file based on passed in list and file path*/
     public void writeContacts(List<Contact> contactsList, Path contactsFilename) {
         try {
             Files.writeString(contactsFilename, "", StandardOpenOption.TRUNCATE_EXISTING);
@@ -124,19 +111,43 @@ public class ContactsManagerApp {
         }
     }
 
+    /*Adds each contact to the list of names based on input provided.*/
     public void addContact() {
         String firstName = JOptionPane.showInputDialog("Please enter the contact's first name:");
         String lastName = JOptionPane.showInputDialog("Please enter the contact's last name:");
         String phoneNumber;
         boolean correctEntry = false;
+        int overrideResponse = -1;
+        int index = 0;
         do {
             try {
                 phoneNumber = JOptionPane.showInputDialog(null, "Please enter the contact's phone number (###-###-#### for 10-digit or ###-#### for 7-digit):", "Phone Number Entry", JOptionPane.PLAIN_MESSAGE);
                 if (phoneNumber.matches("[1-9][0-9][0-9]-[0-9][0-9][0-9][0-9]|[1-9][0-9][0-9]-[1-9][0-9][0-9]-[0-9][0-9][0-9][0-9]")) {
-
-                    this.contactList.add(new Contact(firstName, lastName, phoneNumber));
-                    JOptionPane.showMessageDialog(null, "Contact Added!");
-                    correctEntry = true;
+                    for (Contact contact : this.contactList) {
+                        if (contact.getFirstName().equalsIgnoreCase(firstName) && contact.getLastName().equalsIgnoreCase(lastName)) {
+                            overrideResponse = JOptionPane.showConfirmDialog(null, "An entry is already associated with that first/last name. Do you want to replace the entry?", "Override?", JOptionPane.YES_NO_OPTION);
+                            // If User clicked no then overrideResponse is equal to 1
+                            if (overrideResponse == 1) {
+                                return;
+                            }
+                            // If user clicks yes, then overrideResponse is equal to 0
+                            else if (overrideResponse == 0) {
+                                this.contactList.remove(index);
+                                this.contactList.add(new Contact(firstName, lastName, phoneNumber));
+                                JOptionPane.showMessageDialog(null, "Contact Added!");
+                                this.contactList.sort(Contact::compareTo);
+                                correctEntry = true;
+                                break;
+                            }
+                        }
+                        index++;
+                    }
+                    if (overrideResponse == -1) {
+                        this.contactList.add(new Contact(firstName, lastName, phoneNumber));
+                        JOptionPane.showMessageDialog(null, "Contact Added!");
+                        this.contactList.sort(Contact::compareTo);
+                        correctEntry = true;
+                    }
                 } else {
                     JOptionPane.showMessageDialog(null, "Error with formatting", "Warning!!!", JOptionPane.WARNING_MESSAGE);
                 }
@@ -146,6 +157,7 @@ public class ContactsManagerApp {
         } while (!correctEntry);
     }
 
+    /*Reads the file and stores data into the contacts list*/
     public void readContactsFile(Path contactsFilename) {
         try {
             Scanner scanner = new Scanner(new File(contactsFilename.toString()));
@@ -163,34 +175,32 @@ public class ContactsManagerApp {
         }
     }
 
+    /*Creates the files if not already created*/
     public void createFiles(Path contactsDirectory, Path contactsFilename) {
         try {
             if (Files.notExists(contactsDirectory)) {
                 Files.createDirectories(contactsDirectory);
-                System.out.println("Directory created");
             }
             if (Files.notExists(contactsFilename)) {
                 Files.createFile(contactsFilename);
-                System.out.println("file created");
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
 
+    /*View all contacts*/
     public void viewContacts() {
         ImageIcon basketball = new ImageIcon("src/channel.png");
         StringBuilder displayString = new StringBuilder();
-//        System.out.printf("%-21s | %-13s\n", "NAME", "PHONE NUMBER");
         displayString.append("CONTACT LIST\n");
         for (Contact contact : this.contactList) {
-//            System.out.printf("%-10s %-10s | %-13s\n", contact.getFirstName(), contact.getLastName(), contact.getPhoneNumber());
             displayString.append(contact.getFirstName()).append(" ").append(contact.getLastName()).append(": ").append(contact.getPhoneNumber()).append("\n");
         }
-        System.out.println(displayString);
         JOptionPane.showMessageDialog(null, displayString, "Your Contact's Details", JOptionPane.PLAIN_MESSAGE, basketball);
     }
 
+    /*View individual contacts based on first and last name*/
     public void viewContacts(String firstName, String lastName) {
         ImageIcon basketball = new ImageIcon("src/channel.png");
         for (Contact contact : this.contactList) {
@@ -199,6 +209,4 @@ public class ContactsManagerApp {
             }
         }
     }
-
-
 }
